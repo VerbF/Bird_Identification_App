@@ -1,3 +1,1 @@
-detect_images/
-detect_results/
-logs/
+*.pyc
