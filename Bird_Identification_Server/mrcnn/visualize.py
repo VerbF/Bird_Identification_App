@@ -167,7 +167,7 @@ def display_instances(image, boxes, masks, class_ids, class_names,
     if auto_show:
         plt.show()
         
-def save_detect_result(save_path,image, boxes, masks, class_ids, class_names,
+def save_detect_image_result(save_path,image, boxes, masks, class_ids, class_names,
                       scores=None, title="",
                       figsize=(16, 16), ax=None,
                       show_mask=True, show_bbox=True,

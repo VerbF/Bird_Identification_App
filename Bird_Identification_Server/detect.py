@@ -54,6 +54,13 @@ def load_image(img_path):
         if image.shape[-1] == 4:
             image = image[..., :3]
         return image
+#保存识别出的鸟类类别到文本文件
+def save_detect_txt_result(file_name, bird_name):     
+    file_path = file_name + '.txt' 
+    file = open(file_path,'w')             
+    file.write(bird_name) 
+    file.close() 
+    print('Save txt successfully!')
 
 #推断设置
 inference_config = InferenceConfig()
@@ -79,9 +86,13 @@ r = results[0]
 #设置检测结果图片保存路径
 save_path = os.path.join(DETECT_RESULTS_DIR,image_name)
 
-#保存结果
-visualize.save_detect_result(save_path,detect_img,  r['rois'], r['masks'], r['class_ids'], 
+#保存文本结果
+save_detect_txt_result(save_path , bird_dataset.class_names[r['class_ids'][0]])  
+print('Save txt successfully!')
+#保存图片结果
+visualize.save_detect_image_result(save_path,detect_img,  r['rois'], r['masks'], r['class_ids'], 
                             bird_dataset.class_names, r['scores'] ,ax=get_ax(),show_mask = True, show_bbox = False)
+   
 
 
 

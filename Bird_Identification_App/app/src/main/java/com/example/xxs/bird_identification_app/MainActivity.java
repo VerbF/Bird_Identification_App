@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    //用户选择图片结束
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
