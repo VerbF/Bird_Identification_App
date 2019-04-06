@@ -5,7 +5,8 @@ import sys
 import random
 import string
 import socket
-from flask import Flask, request,Response
+import json
+from flask import Flask, request,Response,jsonify
 
 app = Flask(__name__)
 #基础设置
@@ -30,18 +31,26 @@ def uploadImg():
     #保存图片
     img.save(file_path)
 
-    #执行 识别鸟类的脚本 图图片的名字作为参数
+    #执行 识别鸟类的脚本 图片的名字作为参数
     cmd_str = ("python " + DETECT_FILE_PATH + " " + imgName)
     os.system(cmd_str)
 
     #获取 识别的结果图片
     imgPath = os.path.join(DETECT_RESULTS_DIR , imgName)
-    with open(imgPath, 'rb') as f:
-        image = f.read()
+    with open(imgPath, 'rb') as image_file:
+        image_result = image_file.read()
+    #获取 识别结果json文件
+    jsonPath = os.path.join(DETECT_RESULTS_DIR , imgName + '.json')
+    with open(jsonPath,'r') as json_file:
+        json_result = json.load(json_file)
 
     #返回结果
-    return Response(image, mimetype="image/jpeg")
+    #return Response(image_result, mimetype="image/jpeg")
+    return jsonify(json_result)
+    #return Response(json.dumps({'a': 1, 'b':1}),content_type='application/json')
+    #return jsonify(test)
 
 if __name__ == '__main__':
+    app.config['JSON_AS_ASCII'] = False
     app.run(host=ip_address,port=port,debug=True)
  

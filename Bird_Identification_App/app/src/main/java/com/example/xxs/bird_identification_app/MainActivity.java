@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -14,6 +15,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.wildma.pictureselector.PictureSelector;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -78,6 +83,11 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+    protected  Bitmap base64_to_Bitmap(String base64Data)
+    {
+        byte[] bytes = Base64.decode(base64Data,Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+    }
     //上传图片
     protected void uploadImage(String image_path) {
         if (image_path == null)
@@ -118,8 +128,23 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                final InputStream inputStream = response.body().byteStream();//得到图片的流
-                final Bitmap result_image = BitmapFactory.decodeStream(inputStream);
+                String json_result = response.body().string();
+                JSONObject jsonObj = null;
+                Bitmap temp_image = null;
+                String temp_bird_name = null;
+                String temp_bird_info = null;
+                try {
+                    jsonObj = new JSONObject(json_result);
+                    temp_bird_name = jsonObj.getString("bird_name");
+                    temp_bird_info = jsonObj.getString("bird_info");
+                    temp_image = base64_to_Bitmap(jsonObj.getString("image_base64_string"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                final Bitmap result_image = temp_image;
+                final String bird_name = temp_bird_name;
+                final String bird_info = temp_bird_info;
+
                 bird_image = result_image;
                 Log.e(TAG, "成功"+response);
                 runOnUiThread(new Runnable() {
@@ -127,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         image_btn =  (ImageButton) findViewById(R.id.imageButton);
                         image_btn.setImageBitmap(result_image);
+                        bird_info_tv.setText(bird_name + " "+ bird_info);
                         Toast.makeText(MainActivity.this, "成功", Toast.LENGTH_SHORT).show();
                     }
                 });

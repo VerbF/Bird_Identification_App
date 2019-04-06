@@ -15,6 +15,8 @@ import matplotlib
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from mrcnn.config import Config
+from base64 import b64encode
+from json import dumps
 #import utils
 from mrcnn import model as modellib,utils
 from mrcnn import visualize
@@ -24,13 +26,16 @@ from PIL import Image
 from birds.birds_dataset import BirdsDataset
 from birds.inference_config import InferenceConfig
 
-#基础路径设置
+#基础设置
+#路径设置
 ROOT_DIR = os.getcwd()
 MODEL_DIR = os.path.join(ROOT_DIR, "logs")
 DETECT_IMAGE_DIR = os.path.join(ROOT_DIR,"detect_images")
 DETECT_RESULTS_DIR = os.path.join(ROOT_DIR,"detect_results")
+#编码格式设置
+ENCODING = 'utf-8'
 
-#获得轴心控制图片大小
+#获得轴心，控制图片大小
 def get_ax(rows=1, cols=1, size=8):
     """Return a Matplotlib Axes array to be used in
     all visualizations in the notebook. Provide a
@@ -54,13 +59,28 @@ def load_image(img_path):
         if image.shape[-1] == 4:
             image = image[..., :3]
         return image
-#保存识别出的鸟类类别到文本文件
-def save_detect_txt_result(file_name, bird_name):     
-    file_path = file_name + '.txt' 
-    file = open(file_path,'w')             
-    file.write(bird_name) 
-    file.close() 
-    print('Save txt successfully!')
+#保存识别出的结果保存到json文件(图像 + 鸟类名字 + 鸟类信息)
+def save_detect_json_result(file_name, bird_name):     
+    #读取二进制图片，获得原始字节码
+    with open(file_name,'rb') as jpg_file:
+        byte_content = jpg_file.read()
+    #把原始字节码编码成 base64 字节码
+    base64_bytes = b64encode(byte_content)
+    #将 base64 字节码解码成 utf-8 格式的字符串
+    base64_string = base64_bytes.decode(ENCODING)
+    #用字典的形式保存数据
+    raw_data = {}
+    raw_data["image_base64_string"] =  base64_string
+    raw_data['bird_name'] = bird_name
+    raw_data['bird_info'] = 'there is test bird info'
+    #将字典变成 json 格式，缩进为 2 个空格
+    json_data = dumps(raw_data, indent=2)
+    #将 json 格式的数据保存到文件中
+    JSON_NAME = os.path.join(DETECT_RESULTS_DIR,image_name + '.json')
+    with open(JSON_NAME,'w') as json_file:
+        json_file.write(json_data)
+        json_file.close()
+    print('Save json successfully!')
 
 #推断设置
 inference_config = InferenceConfig()
@@ -86,12 +106,14 @@ r = results[0]
 #设置检测结果图片保存路径
 save_path = os.path.join(DETECT_RESULTS_DIR,image_name)
 
-#保存文本结果
-save_detect_txt_result(save_path , bird_dataset.class_names[r['class_ids'][0]])  
-print('Save txt successfully!')
 #保存图片结果
 visualize.save_detect_image_result(save_path,detect_img,  r['rois'], r['masks'], r['class_ids'], 
                             bird_dataset.class_names, r['scores'] ,ax=get_ax(),show_mask = True, show_bbox = False)
+
+#保存文本结果
+save_detect_json_result(save_path , bird_dataset.class_names[r['class_ids'][0]])  
+
+
    
 
 
