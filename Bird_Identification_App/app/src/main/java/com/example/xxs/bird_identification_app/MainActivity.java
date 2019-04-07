@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.wildma.pictureselector.PictureSelector;
 
 import org.json.JSONArray;
@@ -39,10 +40,16 @@ public class MainActivity extends AppCompatActivity {
     ImageButton image_btn ;
     Button identify_btn;
     TextView bird_info_tv ;
+    TextView loading_tv;
     Bitmap bird_image;
     String image_Path;
+    CircularProgressView progressView;
+    View obscuration_view;
     final String url = "http://192.168.1.105:8888/uploadImg";
     final String TAG = "MainActivity";
+    final int ovscuration_alpha = 170;
+    final int cropWidth = 1200;
+    final int cropHeight =1200;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,19 +57,37 @@ public class MainActivity extends AppCompatActivity {
         image_btn =  (ImageButton) findViewById(R.id.imageButton);
         identify_btn = (Button) findViewById(R.id.identify_btn);
         image_btn.getBackground().setAlpha(0);
+
         //选择图片
         image_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 PictureSelector
                         .create(MainActivity.this, PictureSelector.SELECT_REQUEST_CODE)
-                        .selectPicture(true, 1200, 1200, 1, 1);
+                        .selectPicture(true, cropWidth, cropWidth, 1, 1);
             }
         });
         //开始识别
         identify_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //设置蒙层和正在加载组件
+                progressView = (CircularProgressView) findViewById(R.id.progress_view);
+                obscuration_view = findViewById(R.id.obscuration_view);
+                loading_tv = (TextView) findViewById(R.id.loading_tv);
+
+                obscuration_view.bringToFront();
+                obscuration_view.setVisibility(View.VISIBLE);
+                obscuration_view.getBackground().setAlpha(ovscuration_alpha);
+
+                loading_tv.bringToFront();
+                loading_tv.setVisibility(View.VISIBLE);
+
+                progressView.bringToFront();
+                progressView.startAnimation();
+                progressView.setVisibility(View.VISIBLE);
+
+                //上传图像
                 uploadImage(image_Path);
             }
         });
@@ -77,8 +102,12 @@ public class MainActivity extends AppCompatActivity {
                 //将用户选择的图片显示在imagebutton中
                 image_Path  = data.getStringExtra(PictureSelector.PICTURE_PATH);
                 image_btn =  (ImageButton) findViewById(R.id.imageButton);
+                bird_info_tv = (TextView) findViewById(R.id.bird_info_tv);
+
+                bird_info_tv.setVisibility(View.INVISIBLE);
                 bird_image = BitmapFactory.decodeFile(image_Path);
                 image_btn.setImageBitmap(bird_image);
+
             }
         }
     }
@@ -127,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
             //成功响应
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                //从resonance中取出json对象
                 String json_result = response.body().string();
                 JSONObject jsonObj = null;
                 Bitmap temp_image = null;
@@ -150,6 +180,16 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        //隐藏蒙层和正在加载组件
+                        progressView = (CircularProgressView) findViewById(R.id.progress_view);
+                        obscuration_view = findViewById(R.id.obscuration_view);
+                        loading_tv = (TextView) findViewById(R.id.loading_tv);
+
+                        loading_tv.setVisibility(View.INVISIBLE);
+                        obscuration_view.setVisibility(View.INVISIBLE);
+                        progressView.stopAnimation();
+                        progressView.setVisibility(View.INVISIBLE);
+                        //显示结果图片和鸟类信息
                         image_btn =  (ImageButton) findViewById(R.id.imageButton);
                         bird_info_tv = (TextView) findViewById(R.id.bird_info_tv);
                         image_btn.setImageBitmap(result_image);

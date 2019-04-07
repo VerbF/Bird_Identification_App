@@ -6,12 +6,52 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <View
+        android:id="@+id/obscuration_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/color_333333"
+        android:visibility="invisible"
+        tools:layout_editor_absoluteX="157dp"
+        tools:layout_editor_absoluteY="0dp" />
+
+    <com.github.rahatarmanahmed.cpv.CircularProgressView
+        android:id="@+id/progress_view"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="160dp"
+        android:layout_marginLeft="160dp"
+        app:cpv_color="#008777"
+        app:cpv_animAutostart="true"
+        app:cpv_indeterminate="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.421" />
+
+    <TextView
+        android:id="@+id/loading_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="144dp"
+        android:layout_marginLeft="144dp"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/color_white"
+        android:textSize="20dp"
+        android:layout_marginBottom="8dp"
+        android:text="正在识别中..."
+        app:layout_constraintBottom_toBottomOf="@+id/obscuration_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progress_view"
+        app:layout_constraintVertical_bias="0.03" />
+
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="8dp">
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="16dp">
 
         <ImageButton
             android:id="@+id/imageButton"
@@ -26,23 +66,24 @@
         <TextView
             android:id="@+id/bird_info_tv"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:background="@drawable/text_view_border"
-            android:text="鸟类信息"
+            android:layout_height="90dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
+            android:background="@drawable/text_view_border"
             android:padding="2dp"
+            android:text="鸟类信息"
             android:visibility="invisible" />
 
         <Button
             android:id="@+id/identify_btn"
             android:layout_width="match_parent"
             android:layout_height="80dp"
-            android:background="@drawable/round_buttn"
             android:layout_margin="8dp"
+            android:background="@drawable/round_buttn"
             android:text="开始识别"
             android:textColor="@color/color_white"
             android:textSize="40dp" />
+
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
