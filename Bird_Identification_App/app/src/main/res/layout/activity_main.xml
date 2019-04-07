@@ -14,10 +14,11 @@
         tools:layout_editor_absoluteY="8dp">
 
         <ImageButton
-            android:scaleType="fitXY"
             android:id="@+id/imageButton"
             android:layout_width="match_parent"
             android:layout_height="428dp"
+            android:scaleType="fitXY"
+            android:src="@mipmap/image_button_default"
             tools:layout_editor_absoluteX="90dp"
             tools:layout_editor_absoluteY="0dp"
             tools:srcCompat="@tools:sample/avatars" />
@@ -25,14 +26,23 @@
         <TextView
             android:id="@+id/bird_info_tv"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="鸟类信息" />
+            android:layout_height="80dp"
+            android:background="@drawable/text_view_border"
+            android:text="鸟类信息"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:padding="2dp"
+            android:visibility="invisible" />
 
         <Button
             android:id="@+id/identify_btn"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="开始识别" />
+            android:layout_height="80dp"
+            android:background="@drawable/round_buttn"
+            android:layout_margin="8dp"
+            android:text="开始识别"
+            android:textColor="@color/color_white"
+            android:textSize="40dp" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

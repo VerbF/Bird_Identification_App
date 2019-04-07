@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         image_btn =  (ImageButton) findViewById(R.id.imageButton);
         identify_btn = (Button) findViewById(R.id.identify_btn);
+        image_btn.getBackground().setAlpha(0);
         //选择图片
         image_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,13 +74,11 @@ public class MainActivity extends AppCompatActivity {
         /*结果回调*/
         if (requestCode == PictureSelector.SELECT_REQUEST_CODE) {
             if (data != null) {
-                image_Path = data.getStringExtra(PictureSelector.PICTURE_PATH);
-                bird_info_tv  = (TextView) findViewById(R.id.bird_info_tv);
+                //将用户选择的图片显示在imagebutton中
+                image_Path  = data.getStringExtra(PictureSelector.PICTURE_PATH);
                 image_btn =  (ImageButton) findViewById(R.id.imageButton);
-                bird_info_tv.setText(image_Path);
                 bird_image = BitmapFactory.decodeFile(image_Path);
                 image_btn.setImageBitmap(bird_image);
-
             }
         }
     }
@@ -88,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         byte[] bytes = Base64.decode(base64Data,Base64.DEFAULT);
         return BitmapFactory.decodeByteArray(bytes,0,bytes.length);
     }
-    //上传图片
+    //上传图片，接收检测结果（图片 + 鸟类信息 + 鸟类名称）
     protected void uploadImage(String image_path) {
         if (image_path == null)
         {
@@ -125,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
             }
-
+            //成功响应
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String json_result = response.body().string();
@@ -147,11 +146,14 @@ public class MainActivity extends AppCompatActivity {
 
                 bird_image = result_image;
                 Log.e(TAG, "成功"+response);
+                //更新UI （图片 + 鸟类信息）
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         image_btn =  (ImageButton) findViewById(R.id.imageButton);
+                        bird_info_tv = (TextView) findViewById(R.id.bird_info_tv);
                         image_btn.setImageBitmap(result_image);
+                        bird_info_tv.setVisibility(View.VISIBLE);
                         bird_info_tv.setText(bird_name + " "+ bird_info);
                         Toast.makeText(MainActivity.this, "成功", Toast.LENGTH_SHORT).show();
                     }
