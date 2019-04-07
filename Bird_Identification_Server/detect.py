@@ -17,6 +17,7 @@ import tensorflow as tf
 from mrcnn.config import Config
 from base64 import b64encode
 from json import dumps
+import MySQLdb
 #import utils
 from mrcnn import model as modellib,utils
 from mrcnn import visualize
@@ -34,6 +35,13 @@ DETECT_IMAGE_DIR = os.path.join(ROOT_DIR,"detect_images")
 DETECT_RESULTS_DIR = os.path.join(ROOT_DIR,"detect_results")
 #编码格式设置
 ENCODING = 'utf-8'
+#数据库设置
+DB_HOST = 'localhost'
+DB_PORT = 3306
+DB_USER_NAME = 'root'
+DB_PASSWORD = '704865074'
+DB_NAME = 'bird_identification_app'
+DB_CHARSET = 'utf8'
 
 #获得轴心，控制图片大小
 def get_ax(rows=1, cols=1, size=8):
@@ -59,6 +67,18 @@ def load_image(img_path):
         if image.shape[-1] == 4:
             image = image[..., :3]
         return image
+#根据鸟类的名字获取鸟类的信息
+def get_bird_info(bird_name):
+    conn = MySQLdb.connect(host=DB_HOST,port=DB_PORT,user=DB_USER_NAME,passwd=DB_PASSWORD,db=DB_NAME,charset=DB_CHARSET)
+    sql = "select bird_info from birds where bird_name = '" + bird_name + "'"
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    row = cursor.fetchone()
+    bird_info = row[0]
+    cursor.close()
+    conn.close()
+    return bird_info
+
 #保存识别出的结果保存到json文件(图像 + 鸟类名字 + 鸟类信息)
 def save_detect_json_result(file_name, bird_name):     
     #读取二进制图片，获得原始字节码
@@ -72,7 +92,7 @@ def save_detect_json_result(file_name, bird_name):
     raw_data = {}
     raw_data["image_base64_string"] =  base64_string
     raw_data['bird_name'] = bird_name
-    raw_data['bird_info'] = 'there is test bird info'
+    raw_data['bird_info'] = get_bird_info(bird_name)
     #将字典变成 json 格式，缩进为 2 个空格
     json_data = dumps(raw_data, indent=2)
     #将 json 格式的数据保存到文件中
