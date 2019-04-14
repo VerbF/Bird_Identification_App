@@ -21,7 +21,7 @@ class BirdsConfig(Config):
     IMAGES_PER_GPU = 1
  
     # Number of classes (including background)
-    NUM_CLASSES = 1 + 2  # background + 2 birds
+    NUM_CLASSES = 1 + 5  # background + 5 birds
  
     # Use small images for faster training. Set the limits of the small side
     # the large side, and that determines the image bird.

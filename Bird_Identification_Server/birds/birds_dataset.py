@@ -73,6 +73,9 @@ class BirdsDataset(utils.Dataset):
         # Add classes
         self.add_class("birds", 1, "Black_footed_Albatross")
         self.add_class("birds", 2, "Laysan_Albatross")
+        self.add_class("birds", 3, "Sooty_Albatross")
+        self.add_class("birds", 4, "Groove_billed_Ani")
+        self.add_class("birds", 5, "Crested_Auklet")
         for i in range(count):
             # 获取图片宽和高
             filestr = imglist[i].split(".")[0]
@@ -91,6 +94,9 @@ class BirdsDataset(utils.Dataset):
         # Add classes
         self.add_class("birds", 1, "Black_footed_Albatross")
         self.add_class("birds", 2, "Laysan_Albatross")
+        self.add_class("birds", 3, "Sooty_Albatross")
+        self.add_class("birds", 4, "Groove_billed_Ani")
+        self.add_class("birds", 5, "Crested_Auklet")
     # 重写load_mask
     def load_mask(self, image_id):
         """Generate instance masks for birds of the given image ID.
