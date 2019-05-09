@@ -111,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+    //将base64的图片转换成bitmap类型
     protected  Bitmap base64_to_Bitmap(String base64Data)
     {
         byte[] bytes = Base64.decode(base64Data,Base64.DEFAULT);
